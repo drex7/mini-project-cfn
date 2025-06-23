@@ -5,7 +5,7 @@ parameters:
   SubnetCidrPublic2: 10.0.2.0/24
   SubnetCidrPrivate1: 10.0.3.0/24
   SubnetCidrPrivate2: 10.0.4.0/24
-  ProjectTag: mini-project
+  ProjectTag: week5
   CPUPolicyTargetValue: 50
   ContainerImageURI: 985539763589.dkr.ecr.eu-central-1.amazonaws.com/week5/mini-project-repo:latest
 tags: {}

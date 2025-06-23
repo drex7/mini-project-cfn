@@ -27,7 +27,7 @@ Parameters:
     Default: ami-02b7d5b1e55a7b5f1
   ProjectTag:
     Type: String
-    Default: mini-project
+    Default: week5
   CPUPolicyTargetValue:
     Type: Number
     Default: 50
@@ -44,7 +44,7 @@ Resources:
       Tags:
         - Key: Name
           Value: MiniProjectVPC
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   # Internet Gateway
@@ -54,7 +54,7 @@ Resources:
       Tags:
         - Key: Name
           Value: MiniProjectVPC-IGW
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   AttachGateway:
@@ -74,7 +74,7 @@ Resources:
       Tags:
         - Key: Name
           Value: PublicSubnet1
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   PublicSubnet2:
@@ -87,7 +87,7 @@ Resources:
       Tags:
         - Key: Name
           Value: PublicSubnet2
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   PrivateSubnet1:
@@ -99,7 +99,7 @@ Resources:
       Tags:
         - Key: Name
           Value: PrivateSubnet1
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   PrivateSubnet2:
@@ -111,7 +111,7 @@ Resources:
       Tags:
         - Key: Name
           Value: PrivateSubnet2
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   # Route Tables
@@ -122,7 +122,7 @@ Resources:
       Tags:
         - Key: Name
           Value: PublicRouteTable
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   PrivateRouteTable:
@@ -132,7 +132,7 @@ Resources:
       Tags:
         - Key: Name
           Value: PrivateRouteTable
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   # Routes
@@ -157,7 +157,7 @@ Resources:
       Tags:
         - Key: Name
           Value: MyVPC-NAT
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   PrivateRoute:
@@ -209,7 +209,7 @@ Resources:
       Tags:
         - Key: Name
           Value: ContainerSG
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   ALBSecurityGroup:
@@ -228,7 +228,7 @@ Resources:
       Tags:
         - Key: Name
           Value: ALBSecurityGroup
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   # IAM Role for ECSTaskExecutionRole
@@ -262,7 +262,7 @@ Resources:
       Tags:
         - Key: Name
           Value: ECSTaskExecutionRole
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   # IAM Role for ECSTaskRole
@@ -320,7 +320,7 @@ Resources:
       Tags:
         - Key: Name
           Value: ECSTaskRole
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   TaskDefinition:
@@ -361,7 +361,7 @@ Resources:
       Tags:
         - Key: Name
           Value: GalleryXPAppContainer
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   ECSCluster:
@@ -374,7 +374,7 @@ Resources:
         - Name: containerInsights
           Value: disabled
       Tags:
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   ECSService:
@@ -418,7 +418,7 @@ Resources:
       Tags:
         - Key: Name
           Value: GalleryXPAppService
-        - Key: Project
+        - Key: lab
           Value: !Sub '${ProjectTag}'
 
   LoadBalancer:
