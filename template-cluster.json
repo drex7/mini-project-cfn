@@ -27,8 +27,8 @@
         {
           "Type": "CommaDelimitedList",
           "Description": "Optional - Specifies the Comma separated list of existing VPC Subnet Ids where ECS instances will run",
-          "Default": "",
-        },
+          "Default": ""
+        }
     },
   "Resources":
     {
