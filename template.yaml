@@ -327,7 +327,6 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub '${ProjectTag}-TaskDefinition'
-      NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
       Cpu: '256'
@@ -343,8 +342,6 @@ Resources:
           Image: !Ref ContainerImageURI
           PortMappings:
             - ContainerPort: 3000
-              HostPort: 3000
-              ApplicationProtocol: http
               Protocol: tcp
           Essential: true
           LogConfiguration:
@@ -352,7 +349,7 @@ Resources:
             Options:
               mode: 'non-blocking'
               max-buffer-size: '25m'
-              awslogs-group: !Ref LogGroup
+              awslogs-group: "/ecs/gallery-app-task-definition"
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: ecs
           Secrets:
@@ -379,7 +376,9 @@ Resources:
 
   ECSService:
     Type: AWS::ECS::Service
+    DependsOn: Listener
     Properties:
+      AvailabilityZoneRebalancing: ENABLED
       Cluster: !Ref ECSCluster
       DesiredCount: 3
       LaunchType: FARGATE
@@ -387,8 +386,6 @@ Resources:
       EnableExecuteCommand: true
       ServiceName: gallery-app-task-definition-service
       SchedulingStrategy: REPLICA
-      DesiredCount: 3
-      AvailabilityZoneRebalancing: ENABLED
       NetworkConfiguration:
         AwsvpcConfiguration:
           Subnets:
@@ -413,8 +410,6 @@ Resources:
         Type: CODE_DEPLOY
       ServiceConnectConfiguration:
         Enabled: false
-      DependsOn:
-      - Listener
       Tags:
         - Key: Name
           Value: GalleryXPAppService
@@ -435,8 +430,9 @@ Resources:
   BlueGreenTargetGroup1:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
+      Description: This target group will route traffic to the original task set in your service.
       HealthCheckPath: /
-      Name: ApplicationTargetGroup
+      Name: BlueGreenTargetGroup1
       Port: 80
       Protocol: HTTP
       TargetType: ip
@@ -449,8 +445,9 @@ Resources:
   BlueGreenTargetGroup2:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
+      Description: This target group will be used when creating your CodeDeploy deployment group to route traffic to the replacement task set in your service.
       HealthCheckPath: /
-      Name: ApplicationTargetGroup
+      Name: BlueGreenTargetGroup2
       Port: 80
       Protocol: HTTP
       TargetType: ip
@@ -470,16 +467,26 @@ Resources:
       Port: 80
       Protocol: HTTP
   
+    # Auto Scaling
+  ScalableTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: 3
+      MinCapacity: 1
+      ResourceId: !Join ['', ['service/', !Ref ECSCluster, '/', !GetAtt ECSService.Name]]
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+
   AutoScalingPolicy:
     Type: AWS::AutoScaling::ScalingPolicy
     Properties:
       PolicyType: TargetTrackingScaling
-      AutoScalingGroupName: !Ref AutoScalingGroup
+      ScalingTargetId: !Ref ScalableTarget
       Cooldown: '300'
       TargetTrackingConfiguration:
         TargetValue: '!Ref CPUPolicyTargetValue'
         PredefinedMetricSpecification:
-          PredefinedMetricType: ASGAverageCPUUtilization
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
       
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -520,14 +527,15 @@ Resources:
   CodeDeployApp:
     Type: AWS::CodeDeploy::Application
     Properties:
-      ApplicationName: WebAppCodeDeploy
+      ApplicationName: GalleryAppCodeDeploy
       ComputePlatform: ECS
+      Region: !Ref AWS::Region
 
   DeploymentGroup:
     Type: AWS::CodeDeploy::DeploymentGroup
     Properties:
       ApplicationName: !Ref CodeDeployApp
-      DeploymentGroupName: WebAppDeploymentGroup
+      DeploymentGroupName: GalleryAppDeploymentGroup
       DeploymentConfigName: CodeDeployDefault.ECSAllAtOnce
       ServiceRoleArn: !GetAtt CodeDeployRole.Arn
       AutoRollbackConfiguration:
