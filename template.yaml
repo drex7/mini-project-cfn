@@ -488,30 +488,7 @@ Resources:
         PredefinedMetricSpecification:
           PredefinedMetricType: ECSServiceAverageCPUUtilization
       
-  AutoScalingGroup:
-    Type: AWS::AutoScaling::AutoScalingGroup
-    Properties:
-      LaunchTemplate:
-        LaunchTemplateId: !Ref LaunchTemplate
-        Version: !GetAtt LaunchTemplate.LatestVersionNumber
-      MaxSize: '3'
-      MinSize: '1'
-      DesiredCapacity: '1'
-      TargetGroupARNs:
-        - !Ref BlueGreenTargetGroup1
-        - !Ref BlueGreenTargetGroup2
-      HealthCheckType: ELB
-      HealthCheckGracePeriod: 600
-      VPCZoneIdentifier: 
-        - !Ref PrivateSubnet1
-        - !Ref PrivateSubnet2
-      Tags:
-        - Key: Name
-          Value: AutoScalingGroup
-          PropagateAtLaunch: true
-
-   # CodeDeploy for Blue/Green Deployment
-  CodeDeployRole:
+CodeDeployRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
