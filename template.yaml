@@ -278,9 +278,9 @@ Resources:
             Action: sts:AssumeRole
             Condition: 
               StringEquals: 
-                "aws:SourceAccount": !Sub "${AWS::AccountId}"    
-                "ArnLike":
-                  "aws:SourceArn": !Sub "arn:aws:ecs:eu-central-1:${AWS::AccountId}:*"
+                aws:SourceAccount: !Sub "${AWS::AccountId}"    
+              ArnLike:
+                  aws:SourceArn: !Sub "arn:aws:ecs:eu-central-1:${AWS::AccountId}:*"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
       Policies:
@@ -307,7 +307,6 @@ Resources:
                   - ssmmessages:CreateDataChannel
                   - ssmmessages:OpenControlChannel
                   - ssmmessages:OpenDataChannel
-                    
                 Resource: "*"
       Tags:
         - Key: Name
