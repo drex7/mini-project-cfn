@@ -484,7 +484,7 @@ Resources:
       ScalingTargetId: !Ref ScalableTarget
       Cooldown: '300'
       TargetTrackingConfiguration:
-        TargetValue: '!Ref CPUPolicyTargetValue'
+        TargetValue: !Ref CPUPolicyTargetValue
         PredefinedMetricSpecification:
           PredefinedMetricType: ECSServiceAverageCPUUtilization
       
