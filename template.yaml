@@ -339,7 +339,7 @@ Resources:
         CpuArchitecture: X86_64
         OperatingSystemFamily: LINUX   
       ContainerDefinitions:
-        - Name: GalleryXPAppContainer
+        - Name: GalleryAppContainer
           Image: !Ref ContainerImageURI
           PortMappings:
             - ContainerPort: 3000
@@ -401,7 +401,7 @@ Resources:
         - ContainerName: GalleryAppContainer
           ContainerPort: 3000
           LoadBalancerName: !Ref AWS::NoValue
-          TargetGroupArn: !Ref TargetGroup
+          TargetGroupArn: !Ref BlueGreenTargetGroup1
       PlatformVersion: LATEST
       DeploymentConfiguration:
         DeploymentCircuitBreaker:
@@ -465,7 +465,7 @@ Resources:
     Properties:
       DefaultActions:
         - Type: forward
-          TargetGroupArn: !Ref TargetGroup
+          TargetGroupArn: !Ref BlueGreenTargetGroup1
       LoadBalancerArn: !Ref LoadBalancer
       Port: 80
       Protocol: HTTP
@@ -491,7 +491,8 @@ Resources:
       MinSize: '1'
       DesiredCapacity: '1'
       TargetGroupARNs:
-        - !Ref TargetGroup
+        - !Ref BlueGreenTargetGroup1
+        - !Ref BlueGreenTargetGroup2
       HealthCheckType: ELB
       HealthCheckGracePeriod: 600
       VPCZoneIdentifier: 
