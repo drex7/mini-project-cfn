@@ -326,7 +326,7 @@ Resources:
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub '${ProjectTag}-TaskDefinition'
+      Family: gallery-app-task-definition
       RequiresCompatibilities:
         - FARGATE
       Cpu: '256'
@@ -398,7 +398,7 @@ Resources:
         - ContainerName: GalleryAppContainer
           ContainerPort: 3000
           LoadBalancerName: !Ref AWS::NoValue
-          TargetGroupArn: !Ref BlueGreenTargetGroup1
+          TargetGroupArn: !Ref TargetGroupBlue
       PlatformVersion: LATEST
       DeploymentConfiguration:
         DeploymentCircuitBreaker:
@@ -427,12 +427,11 @@ Resources:
         - !Ref PublicSubnet1
         - !Ref PublicSubnet2
       
-  BlueGreenTargetGroup1:
+  TargetGroupBlue:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Description: This target group will route traffic to the original task set in your service.
       HealthCheckPath: /
-      Name: BlueGreenTargetGroup1
+      Name: TargetGroupBlue
       Port: 80
       Protocol: HTTP
       TargetType: ip
@@ -442,12 +441,11 @@ Resources:
         - Key: deregistration_delay.timeout_seconds
           Value: '300'
 
-  BlueGreenTargetGroup2:
+  TargetGroupGreen:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Description: This target group will be used when creating your CodeDeploy deployment group to route traffic to the replacement task set in your service.
       HealthCheckPath: /
-      Name: BlueGreenTargetGroup2
+      Name: TargetGroupGreen
       Port: 80
       Protocol: HTTP
       TargetType: ip
@@ -462,7 +460,7 @@ Resources:
     Properties:
       DefaultActions:
         - Type: forward
-          TargetGroupArn: !Ref BlueGreenTargetGroup1
+          TargetGroupArn: !Ref TargetGroupBlue
       LoadBalancerArn: !Ref LoadBalancer
       Port: 80
       Protocol: HTTP
@@ -531,8 +529,8 @@ Resources:
       LoadBalancerInfo:
         TargetGroupPairInfoList:
           - TargetGroups:
-              - Name: !Ref BlueGreenTargetGroup1
-              - Name: !Ref BlueGreenTargetGroup2
+              - Name: !Ref TargetGroupBlue
+              - Name: !Ref TargetGroupGreen
             ProdTrafficRoute:
               ListenerArns:
                 - !Ref Listener
