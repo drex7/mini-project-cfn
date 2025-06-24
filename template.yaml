@@ -280,43 +280,35 @@ Resources:
               StringEquals: 
                 "aws:SourceAccount": !Sub "${AWS::AccountId}"    
                 "ArnLike":
-                  "aws:SourceArn": !Sub "arn:aws:ecs:eu-central-1:${AWS::AccountId}:*"          
+                  "aws:SourceArn": !Sub "arn:aws:ecs:eu-central-1:${AWS::AccountId}:*"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
       Policies:
         - PolicyName: access-secrets-ssm
           PolicyDocument:
             "Version": "2012-10-17"
-            Statement: [
-                {
-                    "Effect": "Allow",
-                    "Action": [
-                        "s3:GetObject"
-                    ],
-                    "Resource": [
-                        "arn:aws:s3:::gallery-app-bucket-88544/*"
-                    ]
-                },
-                {
-                    "Effect": "Allow",
-                    "Action": [
-                        "ecr:BatchGetImage",
-                        "ecr:GetDownloadUrlForLayer",
-                        "ecr:GetAuthorizationToken"
-                    ],
-                    "Resource": "*"
-                },
-                {
-                    "Effect": "Allow",
-                    "Action": [
-                        "ssmmessages:CreateControlChannel",
-                        "ssmmessages:CreateDataChannel",
-                        "ssmmessages:OpenControlChannel",
-                        "ssmmessages:OpenDataChannel"
-                    ],
-                    "Resource": "*"
-                }
-            ]
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                Resource: 
+                  - arn:aws:s3:::gallery-app-bucket-88544/*
+              - Effect: Allow
+                Action:
+                  - ecr:BatchGetImage
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:GetAuthorizationToken
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ssmmessages:CreateControlChannel
+                  - ssmmessages:CreateDataChannel
+                  - ssmmessages:OpenControlChannel
+                  - ssmmessages:OpenDataChannel
+                    
+                Resource: "*"
       Tags:
         - Key: Name
           Value: ECSTaskRole
@@ -378,7 +370,6 @@ Resources:
     Type: AWS::ECS::Service
     DependsOn: Listener
     Properties:
-      AvailabilityZoneRebalancing: ENABLED
       Cluster: !Ref ECSCluster
       DesiredCount: 3
       LaunchType: FARGATE
@@ -475,14 +466,16 @@ Resources:
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
 
-  AutoScalingPolicy:
-    Type: AWS::AutoScaling::ScalingPolicy
+  ScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
+      PolicyName: CPUScaling
       PolicyType: TargetTrackingScaling
       ScalingTargetId: !Ref ScalableTarget
-      Cooldown: '300'
-      TargetTrackingConfiguration:
+      TargetTrackingScalingPolicyConfiguration:
         TargetValue: !Ref CPUPolicyTargetValue
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
         PredefinedMetricSpecification:
           PredefinedMetricType: ECSServiceAverageCPUUtilization
       
@@ -533,7 +526,7 @@ Resources:
             ProdTrafficRoute:
               ListenerArns:
                 - !Ref Listener
-      EcsServices:
+      ECSServices:
         - ClusterName: !Ref ECSCluster
           ServiceName: !GetAtt ECSService.Name
 
