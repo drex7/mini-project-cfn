@@ -504,7 +504,6 @@ Resources:
     Properties:
       ApplicationName: GalleryAppCodeDeploy
       ComputePlatform: ECS
-      Region: !Ref AWS::Region
 
   DeploymentGroup:
     Type: AWS::CodeDeploy::DeploymentGroup
