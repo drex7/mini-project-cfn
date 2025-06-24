@@ -544,9 +544,6 @@ Outputs:
   ALBEndpoint:
     Description: URL of the Application Load Balancer
     Value: !Join ['', ['http://', !GetAtt LoadBalancer.DnsName]]
-  S3BucketName:
-    Description: Name of the S3 bucket for images
-    Value: !Ref ImageBucket
   ECSClusterName:
     Description: Name of the ECS cluster
     Value: !Ref ECSCluster
