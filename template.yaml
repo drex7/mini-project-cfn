@@ -441,7 +441,7 @@ Resources:
       Protocol: HTTP
       TargetType: ip
       HealthCheckProtocol: HTTP
-      VpcId: !Ref VpcID
+      VpcId: !Ref MyVPC
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
           Value: '300'
@@ -455,7 +455,7 @@ Resources:
       Protocol: HTTP
       TargetType: ip
       HealthCheckProtocol: HTTP
-      VpcId: !Ref VpcID
+      VpcId: !Ref MyVPC
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
           Value: '300'
