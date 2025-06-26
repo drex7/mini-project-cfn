@@ -343,7 +343,9 @@ Resources:
         CorsRules:
           - AllowedHeaders: ['*']
             AllowedMethods: [GET, PUT, POST]
-            AllowedOrigins: ['*']
+            AllowedOrigins: 
+              - !Sub http://${ALB.DnsName}
+              - 'localhost:3000'
             MaxAge: 3000
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
@@ -396,7 +398,7 @@ Resources:
               awslogs-stream-prefix: galleryapp
           Environment: 
             - Name: NUXT_AWS_S3_BUCKET
-              Value: 'gallery-app-bucket-88544'
+              Value: !Ref ImageBucket
           Secrets:
             - Name: DB_PASSWORD
               ValueFrom: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/db_password'
