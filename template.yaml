@@ -344,7 +344,7 @@ Resources:
           - AllowedHeaders: ['*']
             AllowedMethods: [GET, PUT, POST]
             AllowedOrigins: 
-              - !Sub http://${ALB.DnsName}
+              - !Sub http://${LoadBalancer.DnsName}
               - 'localhost:3000'
             MaxAge: 3000
       PublicAccessBlockConfiguration:
