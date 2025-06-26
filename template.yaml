@@ -344,7 +344,7 @@ Resources:
           - AllowedHeaders: ['*']
             AllowedMethods: [GET, PUT, POST]
             AllowedOrigins: 
-              - !Sub http://${LoadBalancer.DnsName}
+              - !Sub http://${LoadBalancer.DNSName}
               - 'localhost:3000'
             MaxAge: 3000
       PublicAccessBlockConfiguration:
