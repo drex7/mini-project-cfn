@@ -7,5 +7,12 @@ parameters:
   PrivateSubnetCidr2: 10.0.4.0/24
   ProjectTag: week5
   CPUPolicyTargetValue: 50
-  ContainerImageURI: 985539763589.dkr.ecr.eu-central-1.amazonaws.com/week5/mini-project-repo:latest
+  ContainerImageURI: 985539763589.dkr.ecr.eu-central-1.amazonaws.com/week5/mini-project-repo:7c2e2220efca4dd8ad7b5ce0c9dd142ead623e11
+  ContainerName: GalleryAppContainer
+  ServiceName: GalleryAppService
+  ClusterName: GalleryAppCluster
+  TaskDefinitionName: GalleryAppTask
+  ECSTaskExecutionRoleName: galleryAppTaskExecutionRole
+  ECSTaskRoleName: galleryAppTaskRole
+
 tags: {}

@@ -24,7 +24,7 @@ Parameters:
     Description: CIDR block for private subnet 2
   ContainerImageURI:
     Type: String
-    Default: ami-02b7d5b1e55a7b5f1
+    Default: 985539763589.dkr.ecr.eu-central-1.amazonaws.com/week5/mini-project-repo:latest
   ProjectTag:
     Type: String
     Default: week5
@@ -32,6 +32,24 @@ Parameters:
     Type: Number
     Default: 50
     Description: Target CPU utilization percentage for auto-scaling policies
+  ContainerName:
+    Type: String
+    Default: GalleryAppContainer
+  ServiceName:
+    Type: String
+    Default: GalleryAppContainer
+  ClusterName:
+    Type: String
+    Default: GalleryAppContainer
+  TaskDefinitionName:
+    Type: String
+    Default: GalleryAppContainer
+  ECSTaskExecutionRoleName:
+    Type: String
+    Default: galleryAppTaskExecutionRole
+  ECSTaskRoleName:
+    Type: String
+    Default: galleryAppTaskRole
 
 Resources:
   # VPC
@@ -235,6 +253,7 @@ Resources:
   ECSTaskExecutionRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Ref ECSTaskExecutionRoleName
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -261,14 +280,15 @@ Resources:
                   - !Sub 'arn:aws:kms:${AWS::Region}:${AWS::AccountId}:key/*'
       Tags:
         - Key: Name
-          Value: ECSTaskExecutionRole
+          Value: !Ref ECSTaskExecutionRoleName
         - Key: lab
           Value: !Sub '${ProjectTag}'
 
-  # IAM Role for ECSTaskRole
+  # IAM Role for ECSTask
   ECSTaskRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: !Ref ECSTaskRoleName
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -310,9 +330,40 @@ Resources:
                 Resource: "*"
       Tags:
         - Key: Name
-          Value: ECSTaskRole
+          Value: !Ref ECSTaskRoleName
         - Key: lab
           Value: !Sub '${ProjectTag}'
+
+  # S3 Bucket
+  ImageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub webapp-images-${AWS::AccountId}
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, PUT, POST]
+            AllowedOrigins: ['*']
+            MaxAge: 3000
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  ImageBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ImageBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !GetAtt ECSTaskRole.Arn
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref ImageBucket, '/*']]
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -329,7 +380,7 @@ Resources:
         CpuArchitecture: X86_64
         OperatingSystemFamily: LINUX   
       ContainerDefinitions:
-        - Name: GalleryAppContainer
+        - Name: !Ref ContainerName
           Image: !Ref ContainerImageURI
           PortMappings:
             - ContainerPort: 3000
@@ -342,7 +393,10 @@ Resources:
               max-buffer-size: '25m'
               awslogs-group: "/ecs/gallery-app-task-definition"
               awslogs-region: !Ref AWS::Region
-              awslogs-stream-prefix: ecs
+              awslogs-stream-prefix: galleryapp
+          Environment: 
+            - Name: NUXT_AWS_S3_BUCKET
+              Value: 'gallery-app-bucket-88544'
           Secrets:
             - Name: DB_PASSWORD
               ValueFrom: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/db_password'
@@ -355,7 +409,7 @@ Resources:
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: mini-project-cluster
+      ClusterName: mini-project-1-cluster
       CapacityProviders:
         - FARGATE
       ClusterSettings:
@@ -494,7 +548,7 @@ Resources:
   CodeDeployApp:
     Type: AWS::CodeDeploy::Application
     Properties:
-      ApplicationName: GalleryAppCodeDeploy
+      ApplicationName: GalleryAppCodeDeployApplication
       ComputePlatform: ECS
 
   DeploymentGroup:
