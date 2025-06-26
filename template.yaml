@@ -344,8 +344,8 @@ Resources:
           - AllowedHeaders: ['*']
             AllowedMethods: [GET, PUT, POST]
             AllowedOrigins: 
-              - !Sub http://${LoadBalancer.DNSName}
-              - 'localhost:3000'
+              - !Join ['', ['http://', !GetAtt LoadBalancer.DNSName]]
+              - 'http://localhost:3000'
             MaxAge: 3000
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
@@ -447,9 +447,6 @@ Resources:
           TargetGroupArn: !Ref TargetGroupBlue
       PlatformVersion: LATEST
       DeploymentConfiguration:
-        DeploymentCircuitBreaker:
-          Enable: true
-          Rollback: true
         MaximumPercent: 200
         MinimumHealthyPercent: 100
       DeploymentController:
@@ -588,7 +585,7 @@ Resources:
 Outputs:
   ALBEndpoint:
     Description: URL of the Application Load Balancer
-    Value: !Join ['', ['http://', !GetAtt LoadBalancer.DnsName]]
+    Value: !Join ['', ['http://', !GetAtt LoadBalancer.DNSName]]
   ECSClusterName:
     Description: Name of the ECS cluster
     Value: !Ref ECSCluster
