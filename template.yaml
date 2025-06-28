@@ -399,9 +399,6 @@ Resources:
           Environment: 
             - Name: NUXT_AWS_S3_BUCKET
               Value: !Ref ImageBucket
-          Secrets:
-            - Name: DB_PASSWORD
-              ValueFrom: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/db_password'
       Tags:
         - Key: Name
           Value: GalleryXPAppContainer
