@@ -24,7 +24,7 @@ Parameters:
     Description: CIDR block for private subnet 2
   ContainerImageURI:
     Type: String
-    Default: 985539763589.dkr.ecr.eu-central-1.amazonaws.com/week5/mini-project-repo:latest
+    Default: 985539763589.dkr.ecr.eu-central-1.amazonaws.com/week5/mini-project-repo:734661c71932256aaef6c73cc60747c9043dd9b6
   ProjectTag:
     Type: String
     Default: week5
