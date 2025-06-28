@@ -35,9 +35,9 @@ Parameters:
   ContainerName:
     Type: String
     Default: GalleryAppContainer
-  ServiceName:
+  ECSServiceName:
     Type: String
-    Default: GalleryAppContainer
+    Default: gallery-app-task-definition-service
   ClusterName:
     Type: String
     Default: GalleryAppContainer
@@ -317,12 +317,6 @@ Resources:
                   - arn:aws:s3:::gallery-app-bucket-88544/*
               - Effect: Allow
                 Action:
-                  - ecr:BatchGetImage
-                  - ecr:GetDownloadUrlForLayer
-                  - ecr:GetAuthorizationToken
-                Resource: "*"
-              - Effect: Allow
-                Action:
                   - ssmmessages:CreateControlChannel
                   - ssmmessages:CreateDataChannel
                   - ssmmessages:OpenControlChannel
@@ -393,6 +387,7 @@ Resources:
             Options:
               mode: 'non-blocking'
               max-buffer-size: '25m'
+              awslogs-create-group: true
               awslogs-group: "/ecs/gallery-app-task-definition"
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: galleryapp
@@ -427,7 +422,7 @@ Resources:
       LaunchType: FARGATE
       TaskDefinition: !Ref TaskDefinition
       EnableExecuteCommand: true
-      ServiceName: gallery-app-task-definition-service
+      ServiceName: !Ref ECSServiceName
       SchedulingStrategy: REPLICA
       NetworkConfiguration:
         AwsvpcConfiguration:
@@ -577,7 +572,7 @@ Resources:
                 - !Ref Listener
       ECSServices:
         - ClusterName: !Ref ECSCluster
-          ServiceName: !GetAtt ECSService.Name
+          ServiceName: !ECSServiceName
 
 Outputs:
   ALBEndpoint:
