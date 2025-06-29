@@ -578,7 +578,7 @@ Resources:
                 - !Ref Listener
       ECSServices:
         - ClusterName: !Ref ECSCluster
-          ServiceName: !Ref ECSServiceName
+          ServiceName: !Ref ECSService
 
 Outputs:
   ALBEndpoint:
