@@ -526,6 +526,7 @@ Resources:
   CodeDeployRole:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: GalleryAppCodeDeployRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -535,6 +536,11 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS
+      Tags:
+        - Key: Name
+          Value: GalleryAppCodeDeployRole
+        - Key: lab
+          Value: !Sub '${ProjectTag}' 
 
   CodeDeployApp:
     Type: AWS::CodeDeploy::Application
