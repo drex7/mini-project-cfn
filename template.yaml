@@ -22,9 +22,6 @@ Parameters:
     Type: String
     Default: 10.0.4.0/24
     Description: CIDR block for private subnet 2
-  ContainerImageURI:
-    Type: String
-    Default: 985539763589.dkr.ecr.eu-central-1.amazonaws.com/week5/mini-project-repo:734661c71932256aaef6c73cc60747c9043dd9b6
   ProjectTag:
     Type: String
     Default: week5
@@ -50,6 +47,12 @@ Parameters:
   ECSTaskRoleName:
     Type: String
     Default: galleryAppTaskRole
+  ECRRepoName:
+    Type: String
+    Default: week5/mini-project-repo
+  ImageTag: 
+    Type: String
+    Default: 734661c71932256aaef6c73cc60747c9043dd9b6
 
 Resources:
   # VPC
@@ -377,7 +380,7 @@ Resources:
         OperatingSystemFamily: LINUX   
       ContainerDefinitions:
         - Name: !Ref ContainerName
-          Image: !Ref ContainerImageURI
+          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepoName}:${ImageTag}
           PortMappings:
             - ContainerPort: 3000
               Protocol: tcp
@@ -499,8 +502,40 @@ Resources:
       LoadBalancerArn: !Ref LoadBalancer
       Port: 80
       Protocol: HTTP
+
+  
+  AutoScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ECSAutoScalingRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: application-autoscaling.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ecs-service-autoscaling-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - application-autoscaling:*
+                  - cloudwatch:DescribeAlarms
+                  - cloudwatch:PutMetricAlarm
+                  - ecs:DescribeServices
+                  - ecs:UpdateService
+                Resource: '*'
+      Tags:
+        - Key: Name
+          Value: ECSAutoScalingRole
+        - Key: lab
+          Value: !Sub '${ProjectTag}'
   
     # Auto Scaling
+  
   ScalableTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
@@ -509,6 +544,7 @@ Resources:
       ResourceId: !Join ['', ['service/', !Ref ECSCluster, '/', !GetAtt ECSService.Name]]
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
+      RoleARN: !GetAtt AutoScalingRole.Arn
 
   ScalingPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
