@@ -2,6 +2,10 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: AWS CloudFormation template for provisioning a secure VPC and container infrastructure.
 
 Parameters:
+  AppName:
+    Type: String
+    Default: GalleryApp
+    Description: Name of the application
   VpcCidr:
     Type: String
     Default: 10.0.0.0/16
@@ -364,6 +368,12 @@ Resources:
               - s3:PutObject
             Resource: !Join ['', ['arn:aws:s3:::', !Ref ImageBucket, '/*']]
 
+  CloudWatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /ecs/${AppName}-Task
+      RetentionInDays: 7
+
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -390,13 +400,14 @@ Resources:
             Options:
               mode: 'non-blocking'
               max-buffer-size: '25m'
-              awslogs-create-group: true
-              awslogs-group: "/ecs/gallery-app-task-definition"
+              awslogs-group: !Ref CloudWatchLogsGroup
               awslogs-region: !Ref AWS::Region
-              awslogs-stream-prefix: galleryapp
+              awslogs-stream-prefix: ecs
           Environment: 
             - Name: NUXT_AWS_S3_BUCKET
               Value: !Ref ImageBucket
+            - Name: NUXT_AWS_REGION
+              Value: !Ref AWS::Region
       Tags:
         - Key: Name
           Value: GalleryXPAppContainer

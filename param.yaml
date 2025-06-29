@@ -5,6 +5,7 @@ parameters:
   PublicSubnetCidr2: 10.0.2.0/24
   PrivateSubnetCidr1: 10.0.3.0/24
   PrivateSubnetCidr2: 10.0.4.0/24
+  AppName: GalleryApp
   ProjectTag: week5
   CPUPolicyTargetValue: 50
   ContainerName: GalleryAppContainer
