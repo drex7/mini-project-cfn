@@ -380,7 +380,7 @@ Resources:
         CpuArchitecture: X86_64
         OperatingSystemFamily: LINUX   
       ContainerDefinitions:
-        - Name: !Sub '{AppName}Container'
+        - Name: !Sub '${AppName}Container'
           Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepoName}:${ImageTag}
           PortMappings:
             - ContainerPort: 3000
