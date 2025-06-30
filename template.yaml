@@ -408,7 +408,7 @@ Resources:
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: mini-project-1-cluster
+      ClusterName: !Sub '${AppName}Cluster'
       CapacityProviders:
         - FARGATE
       ClusterSettings:
@@ -615,7 +615,7 @@ Resources:
               ListenerArns:
                 - !Ref Listener
       ECSServices:
-        - ClusterName: !GetAtt ECSCluster.Name
+        - ClusterName: !Ref ECSCluster
           ServiceName: !GetAtt ECSService.Name
 
 Outputs:
