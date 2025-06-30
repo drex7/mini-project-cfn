@@ -615,8 +615,8 @@ Resources:
               ListenerArns:
                 - !Ref Listener
       ECSServices:
-        - ClusterName: !Ref ECSCluster
-          ServiceName: !Ref ECSService
+        - ClusterName: !GetAtt ECSCluster.Name
+          ServiceName: !GetAtt ECSService.Name
 
 Outputs:
   ALBEndpoint:
