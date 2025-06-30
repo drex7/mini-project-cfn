@@ -33,18 +33,9 @@ Parameters:
     Type: Number
     Default: 50
     Description: Target CPU utilization percentage for auto-scaling policies
-  ContainerName:
-    Type: String
-    Default: GalleryAppContainer
   ECSServiceName:
     Type: String
     Default: gallery-app-task-definition-service
-  ClusterName:
-    Type: String
-    Default: GalleryAppContainer
-  TaskDefinitionName:
-    Type: String
-    Default: GalleryAppContainer
   ECSTaskExecutionRoleName:
     Type: String
     Default: galleryAppTaskExecutionRole
@@ -389,7 +380,7 @@ Resources:
         CpuArchitecture: X86_64
         OperatingSystemFamily: LINUX   
       ContainerDefinitions:
-        - Name: !Ref ContainerName
+        - Name: !Sub '{AppName}Container'
           Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRRepoName}:${ImageTag}
           PortMappings:
             - ContainerPort: 3000
@@ -447,7 +438,7 @@ Resources:
             - !Ref ContainerSecurityGroup
           AssignPublicIp: ENABLED
       LoadBalancers:
-        - ContainerName: GalleryAppContainer
+        - ContainerName: !Sub '${AppName}Container'
           ContainerPort: 3000
           LoadBalancerName: !Ref AWS::NoValue
           TargetGroupArn: !Ref TargetGroupBlue

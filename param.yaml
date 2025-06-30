@@ -8,10 +8,7 @@ parameters:
   AppName: GalleryApp
   ProjectTag: week5
   CPUPolicyTargetValue: 50
-  ContainerName: GalleryAppContainer
   ECSServiceName: gallery-app-task-definition-service
-  ClusterName: GalleryAppCluster
-  TaskDefinitionName: GalleryAppTask
   ECSTaskExecutionRoleName: galleryAppTaskExecutionRole
   ECSTaskRoleName: galleryAppTaskRole
   ECRRepoName: week5/mini-project-repo
