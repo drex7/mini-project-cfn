@@ -216,8 +216,8 @@ Resources:
       VpcId: !Ref MyVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
+          FromPort: 0
+          ToPort: 65535
           SourceSecurityGroupId: !Ref ALBSecurityGroup
       SecurityGroupEgress:
         - IpProtocol: "-1"
@@ -401,7 +401,7 @@ Resources:
               Value: !Ref AWS::Region
       Tags:
         - Key: Name
-          Value: GalleryXPAppContainer
+          Value: !Sub '${AppName}Task'
         - Key: lab
           Value: !Sub '${ProjectTag}'
 
