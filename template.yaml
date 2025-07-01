@@ -614,8 +614,8 @@ Resources:
       LoadBalancerInfo:
         TargetGroupPairInfoList:
           - TargetGroups:
-              - Name: !Ref TargetGroupBlue
-              - Name: !Ref TargetGroupGreen
+              - Name: !GetAtt TargetGroupBlue.TargetGroupName
+              - Name: !GetAtt TargetGroupGreen.TargetGroupName
             ProdTrafficRoute:
               ListenerArns:
                 - !Ref Listener
