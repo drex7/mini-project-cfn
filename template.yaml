@@ -313,7 +313,7 @@ Resources:
                   - s3:ListBucket
                   - s3:DeleteObject
                 Resource: 
-                  - arn:aws:s3:::gallery-app-bucket-88544/*
+                  - !Sub arn:aws:s3:::webapp-images-${AWS::AccountId}/*
               - Effect: Allow
                 Action:
                   - ssmmessages:CreateControlChannel
