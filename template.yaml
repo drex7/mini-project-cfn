@@ -604,7 +604,7 @@ Resources:
       BlueGreenDeploymentConfiguration:
         TerminateBlueInstancesOnDeploymentSuccess:
           Action: TERMINATE
-          TerminationWaitTimeInMinutes: 5
+          TerminationWaitTimeInMinutes: 2
         DeploymentReadyOption:
           ActionOnTimeout: CONTINUE_DEPLOYMENT
           WaitTimeInMinutes: 0
